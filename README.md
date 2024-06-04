@@ -145,8 +145,8 @@ Error: Can't assign to the final variable 'PI2'
 
 区别：
 
-* const编译时得到常量值，赋值后不能被修改
-* final运行时常量，可以先不赋值，在运行时赋值一次，赋值后不能被修改
+* **const**编译时得到常量值，赋值后不能被修改
+* **final**运行时常量，可以先不赋值，在运行时赋值一次，赋值后不能被修改
 
 ```dart
 main() {
@@ -1163,7 +1163,7 @@ main() {
 
 ## Dart Mixin
 
-Java中继承只能有一个父类,Dart也是一样的,Java可以通过 孙extends父,父extends爷来实现多重继承,Dart通过with`with`关键字多重继承来实现代码重用,但它**不是继承**
+Java中继承只能有一个父类,Dart也是一样的,Java可以通过 孙extends父,父extends爷来实现多重继承,Dart通过`with`关键字多重继承来实现代码重用,但它**不是继承**,叫**混入**
 
 userService重用了日志和通知的方法
 
@@ -1198,6 +1198,59 @@ main() {
 
   var productService = ProductService();
   productService.createProduct('手机');
+}
+```
+
+## Dart base
+
+强制继承或者mixin，`base`关键字修饰的类只能被继承或者mixin
+
+```dart
+base mixin class Animal {
+  void move() {
+    print("跑");
+  }
+}
+base mixin class Pet {
+  void printType() {
+    print("我是宠物");
+  }
+}
+base class Cat extends Animal {}
+base class Dog with Animal,Pet {}
+// 限制了只能继承或者mixin，不能实现
+// base class fish implements Animal{}
+main() {
+  Animal cat = new Cat();
+  cat.move();
+  //跑
+  Dog dog = new Dog();
+  dog.move();
+  // 跑
+  dog.printType();
+  // 我是宠物
+}
+```
+
+## Dart sealed
+
+`sealed`修饰的类被称为封闭类，禁止被其他库继承或者实现，封闭类只能在同一个库文件中被继承
+
+下面的类和实例化在同一个文件可以实例，在抽离成两个文件就不能实例化
+
+```dart
+sealed class Animal {
+  void move() {
+    print("跑");
+  }
+}
+
+base class Cat extends Animal {}
+
+main() {
+  Animal cat = new Cat();
+  cat.move();
+  // 跑
 }
 ```
 
@@ -1373,7 +1426,35 @@ void main() async {
 }
 ```
 
-## 空安全和类型断言
+## Dart错误处理
+
+```dart
+void main() {
+  try {
+    // 可能会引发异常的代码块
+    int result = divide(10, 0);
+    print('结果: $result');
+  } on UnsupportedError {
+    // 捕获特定类型的异常
+    print('不能为0!');
+    // 不能为0!
+  } catch (e) {
+    // 捕获其他类型的异常
+    print('错误: $e');
+  } finally {
+    // 在异常处理之后始终执行的代码块
+    print('最终解决办法');
+    // 最终解决办法
+  }
+}
+int divide(int a, int b) {
+  return a ~/ b; // 使用整数除法运算符
+}
+```
+
+
+
+## Dart空安全和类型断言
 
 ```dart
 void printLength(String? str) {
